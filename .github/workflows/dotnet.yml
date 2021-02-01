@@ -49,7 +49,10 @@ jobs:
           rm -r "$release_name"
       - name: Publish
         uses: softprops/action-gh-release@v1
+       
         with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
           files: "App*"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
