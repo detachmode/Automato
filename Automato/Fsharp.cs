@@ -27,7 +27,7 @@ namespace Automato
 
         public IAutoUi App1(Container ui)
         {
-            return InteractiveShell.app1(ui);
+            return InteractiveShell.app1(_workingDir, ui);
         }
 
         public void Foo()
