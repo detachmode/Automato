@@ -1,0 +1,10 @@
+bin/
+obj/
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+Assets/
+Automato/appsettings.Development.json
+.DS_Store
+.idea
+.ionide/symbolCache.db

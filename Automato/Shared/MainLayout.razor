@@ -1,0 +1,27 @@
+﻿@inherits LayoutComponentBase
+
+<div class="columns">
+    <aside class="column sidebar is-narrow">
+        <section class="section" style="background: #ececec;">
+            <nav class="menu">
+                <ul class="menu-list">
+                <NavMenu/>
+                </ul>
+            </nav>
+        </section>
+    </aside>
+    
+    <div style="width: 100%;">
+     
+        <section class="section">
+            @Body
+        </section>
+    </div>
+    
+      
+      @* <div id="notification-area"> *@
+      @*   <div>${Error}</div> *@
+      @* </div> *@
+
+
+</div>
