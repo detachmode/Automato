@@ -73,8 +73,8 @@ jobs:
         dotnet-version: 3.0.100
     - name: Build
       run: |
-      dotnet publish -c Release --self-contained -r ${{ matrix.rid }} -o ./bin/${{ matrix.rid }}
-      zip -r ${{ matrix.rid }} ./bin/${{ matrix.rid }}
+            dotnet publish -c Release --self-contained -r ${{ matrix.rid }} -o ./bin/${{ matrix.rid }}
+            zip -r ${{ matrix.rid }} ./bin/${{ matrix.rid }}
     - name: Get Release File Name & Upload URL
       id: get_release_info
       run: |
