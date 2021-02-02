@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutoUIShared", "AutoUIShare
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "FsiAdapter", "FsiAdapter\FsiAdapter.fsproj", "{3E322DB9-E564-4EA2-8CEA-4E12B438A90D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AutomatoCore", "AutomatoCore\AutomatoCore.csproj", "{D3C45D05-09A3-44FF-BE02-C9CD1BC1D00D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,6 +26,10 @@ Global
 		{3E322DB9-E564-4EA2-8CEA-4E12B438A90D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E322DB9-E564-4EA2-8CEA-4E12B438A90D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E322DB9-E564-4EA2-8CEA-4E12B438A90D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3C45D05-09A3-44FF-BE02-C9CD1BC1D00D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3C45D05-09A3-44FF-BE02-C9CD1BC1D00D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3C45D05-09A3-44FF-BE02-C9CD1BC1D00D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3C45D05-09A3-44FF-BE02-C9CD1BC1D00D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection

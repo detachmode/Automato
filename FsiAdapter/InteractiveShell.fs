@@ -123,23 +123,24 @@ module InteractiveShell =
             failwith (getErrorOutput exn errors)
 
 
-    let app1 (workingDir:string) (ui:Container) : IAutoUi =
+    let app1 (workingDir:string) (state:State) : State =
         
         let sw = Stopwatch.StartNew ()
-        let res = loadscript <| Path.Combine(workingDir, "/app1.fsx")
+        let fullpath = Path.Combine(workingDir, "/app1.fsx")
+        let fullpath = workingDir + "/app1.fsx"
+        let res = loadscript fullpath
         
         let mutable base64Json = ""
-        if not (isNull ui) then
-            let uiJson = toJson ui
-            let byt = System.Text.Encoding.UTF8.GetBytes(uiJson)
-            base64Json <- System.Convert.ToBase64String(byt)
+        let uiJson = toJson state
+        let byt = System.Text.Encoding.UTF8.GetBytes(uiJson)
+        base64Json <- System.Convert.ToBase64String(byt)
         
         let loadTime = sw.ElapsedMilliseconds
-        let uiFromFsx = evalExpressionTyped<Container>($"execute \"{base64Json}\"")
+        let stateFromFsx = evalExpressionTyped<State>($"execute \"{base64Json}\"")
         let executionTime = sw.ElapsedMilliseconds;
-        uiFromFsx.UiElements.Add(Label(Text = $"Until script loaded: {loadTime}; Until executed {executionTime}"))
+        //stateFromFsx.UI.UiElements.Add(Label(Text = $"Until script loaded: {loadTime}; Until executed {executionTime}"))
 
         
-        upcast uiFromFsx
+        stateFromFsx
         
         

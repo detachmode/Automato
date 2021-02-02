@@ -5,6 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\AutomatoCore\AutomatoCore.csproj" />
       <ProjectReference Include="..\AutoUIShared\AutoUIShared.csproj" />
       <ProjectReference Include="..\FsiAdapter\FsiAdapter.fsproj" />
     </ItemGroup>

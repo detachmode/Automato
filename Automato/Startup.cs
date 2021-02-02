@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Automato.Data;
+using AutomatoCore;
 
 namespace Automato
 {
@@ -22,8 +23,8 @@ namespace Automato
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddScoped<Fsharp>();
-            services.Configure<AutomatoConfig>(Configuration.GetSection("Automato"));
+            services.AddAutomato(Configuration);
+     
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

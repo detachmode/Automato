@@ -1,157 +1,17 @@
 ﻿@page "/"
 @using AutoUIShared.AutoUI
 @using System.IO
+@using AutomatoCore
 @using Microsoft.Extensions.Options
-@inject Fsharp Fsharp
-@inject IOptionsSnapshot<AutomatoConfig> Config
-<button @onclick=@LoadApp1>Load App1</button>
+@inject AutoEngine Engine
+<button @onclick=@Engine.LoadApp1>Load App1</button>
 <br/>
 <br/>
-@if (UI != null && UI is Container container)
-{
-    foreach (var autoUi in container.UiElements)
-    {
-        switch (autoUi)
-        {
-            case Button btn:
-                <div style="margin-left:0">
-                    <button @onclick="() => ClickButton(btn)"
-                             style="margin:6px 20px 6px 6px;padding:3px 6px;">
-                        <table>
-                            <tbody>
-                            <tr>
-                                <td style="padding:6px" width="300px">
-                                    <span style="padding: 2px">
-                                        <i class="${iconClass}"></i>
-                                        <!-- <i class="far fa-save"></i> -->
-                                    </span>
-                                
-                                    @((MarkupString)btn.Label)
 
-                                </td>
-                                <td style="padding:0px">${info}</td>
-                            </tr>
+<AutoUIRenderer/>
 
-                            </tbody>
-                        </table>
-
-                    </button>
-                    <!-- <hr style="margin:6px; height:1px" /> -->
-
-                </div>
-
-                break;
-            case Input input:
-                <div style="
-                        width:200px; 
-                        margin:6px 20px 6px 6px;
-                        padding:3px 6px;">
-                    <span>@input.Label</span>
-                    <input style="    
-                            background-color: #f9f9f9;
-                            border-color: #6b6b6b;
-                            color: #363636;
-                            box-shadow: inset 2px 4px 3px 0px rgba(10,10,10,.1);"
-                           type="text" 
-                           value="@input.Value" 
-                           @oninput="@(e => UpdateInput(e, input))">
-                </div>
-                break;
-            case Label label:
-                <div>
-                    <span style="margin:6px 20px 6px 6px;padding:3px 6px;">
-                       @((MarkupString)label.Text) 
-                    </span>
-                </div>
-
-                break;
-        }
-    }
-}
-<div style="margin:0; background: rgb(202, 202, 202); color:rgb(44, 44, 44);  position: fixed;
-      bottom: 0;
-      height:60px;
-      width: 100%; ">
-    <div style="background-color: rgb(155, 155, 155);;">console output</div>
-
-    <pre style="background-color: inherit; color:inherit; padding: 0px;">@Output</pre>
-
-</div>
 
 @code
 {
-    void UpdateInput(ChangeEventArgs e, Input sender)
-    {
-        Console.WriteLine($"sender {sender.Label} value changed to {e.Value}");
-        sender.Value = e.Value.ToString();
-        // if (!string.IsNullOrWhiteSpace(sender.OnChangeEval))
-        // {
-        //     App.Execute(UI, sender.OnChangeEval);
-        // }
-    }
-
-
-    public Container UI { get; set; }
-    // public ExampleAppPersonNames App { get; set; }
     
-
-    private void ClickButton(Button btn)
-    {
-        Output = btn.OnClickEval;
-
-    // var res = App.Execute(UI, btn.OnClickEval);
-    // UI = (Container) res;
-    // Console.WriteLine($"will execute {btn.OnClickEval} with uiModel {jsonString}");
-    }
-
-
-
-    private bool lastExecutionFailed = false;
-    private async void LoadApp1()
-    {
-   
-        var lastEval = DateTime.MinValue;
-        while(true)
-        {
-            var lastWrite = File.GetLastWriteTimeUtc(Path.Combine(Config.Value.WorkingDirectory , "App1.fsx"));
-            if (lastWrite != lastEval)
-            {
-                Output = "Loading App1";
-                StateHasChanged();
-                await Task.Delay(10);
-                try
-                {
-                    UI = (Container) Fsharp.App1(lastExecutionFailed ? null : UI);
-                    lastExecutionFailed = false;
-                }
-                catch (Exception e)
-                {
-                    lastExecutionFailed = true;
-                    UI = new Container()
-                    {
-                        UiElements = new List<IAutoUi>
-                        {
-                            new Label
-                            {
-                                Text = $"<b>Failed to execute App1 script:" +
-                                       $"</b><br/>" +
-                                       $"{e.Message}" +
-                                       $"<hr><hr>" +
-                                       $"<b>CompleteCaught Exception in Blazor</b>" +
-                                       $"{e}" 
-                            }
-                        }
-                    };
-                }
-                Output = "loaded!";
-                lastEval = lastWrite;
-
-                StateHasChanged();
-            }
-            await Task.Delay(100);
-        }
-      
-    }
-
-    public string Output { get; set; }
 }
