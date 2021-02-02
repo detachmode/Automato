@@ -1,4 +1,4 @@
-name: Automato
+name: .NET
 
 on:
   push:
