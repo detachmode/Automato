@@ -1,22 +1,40 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-    <PropertyGroup>
-        <TargetFramework>net5.0</TargetFramework>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <ProjectReference Include="..\AutoUIShared\AutoUIShared.csproj" />
-      <ProjectReference Include="..\FsiAdapter\FsiAdapter.fsproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="AntDesign" Version="0.6.0-*" />
+    <PackageReference Include="AntDesign.Charts" Version="0.2.0-*" />
+    <PackageReference Include="AntDesign.Pro.Layout" Version="0.1.0-*" />
+    <PackageReference Include="System.Net.Http.Json" Version="5.0.0" />
+  </ItemGroup>
 
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css" />
-      <_ContentIncludedByDefault Remove="wwwroot\css\bootstrap\bootstrap.min.css.map" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\AutomatoCore\AutomatoCore.csproj" />
+  </ItemGroup>
+  
+  <PropertyGroup Condition=" '$(SolutionDir)'==''">
+    <SolutionDir>./</SolutionDir>
+  </PropertyGroup>
 
-    <ItemGroup>
-      <PackageReference Include="CliWrap" Version="3.3.0" />
-      <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
-    </ItemGroup>
+  <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SolutionDir)node_modules') ">
+    <!-- Ensure Node.js is installed -->
+    <Exec Command="node --version" ContinueOnError="true">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+    </Exec>
+    <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
+    <Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
+    <Exec WorkingDirectory="$(SolutionDir)" Command="npm install" />
+  </Target>
 
+  <Target Name="DebugRunGulp" BeforeTargets="DebugEnsureNodeEnv" Condition=" '$(Configuration)' == 'Debug' And Exists('$(SolutionDir)node_modules') ">
+    <Exec WorkingDirectory="$(SolutionDir)" Command="npm run gulp:pro" />
+  </Target>
+
+  <Target Name="PublishRunGulp" AfterTargets="ComputeFilesToPublish">
+    <Exec WorkingDirectory="$(SolutionDir)" Command="npm install" />
+    <Exec WorkingDirectory="$(SolutionDir)" Command="npm run gulp:pro" />
+  </Target>
 </Project>

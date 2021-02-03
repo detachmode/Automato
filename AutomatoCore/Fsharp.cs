@@ -25,9 +25,9 @@ namespace Automato
             _workingDir = configuration.Value.WorkingDirectory;
         }
 
-        public IAutoUi App1(Container ui)
+        public State App1(State state)
         {
-            return InteractiveShell.app1(_workingDir, ui);
+            return InteractiveShell.app1(_workingDir, state);
         }
 
         public void Foo()

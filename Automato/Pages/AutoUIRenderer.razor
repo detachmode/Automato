@@ -1,0 +1,55 @@
+@using AutoUIShared.AutoUI
+@using System.IO
+@using AutomatoCore
+@using Microsoft.AspNetCore.Components.Authorization
+@inject AutoEngine Engine
+@implements IDisposable
+@if (Engine.State.UI != null && Engine.State.UI is Container container)
+{
+    foreach (var autoUi in container.UiElements)
+    {
+        switch (autoUi)
+        {
+            case AutoUIShared.AutoUI.Button btn:
+                <div>
+                    <Button style="margin: 10px 0" @onclick="() => Engine.ClickButton(btn)">
+                        @((MarkupString) btn.Label)
+                    </Button>
+                </div>
+                break;
+            case Input input:
+                <div>
+                    <span> @((MarkupString) @input.Label)</span>
+                    <input
+                        type="text"
+                        value="@input.Value"
+                        @oninput="@(e => Engine.UpdateInput(e.Value, input))">
+                </div>
+                break;
+            case AutoUIShared.AutoUI.Label label:
+                <div>
+                   @((MarkupString) label.Text)
+                </div>
+                break;
+        }
+    }
+}
+
+@code
+{
+    protected override void OnInitialized()
+    {
+        Engine.OnStateHasChanged += StateChangedHandler;
+        base.OnInitialized();
+    }
+
+    private async Task StateChangedHandler()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Engine.OnStateHasChanged -= StateChangedHandler;
+    }
+}

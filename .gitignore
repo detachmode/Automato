@@ -3,6 +3,7 @@ obj/
 /packages/
 riderModule.iml
 /_ReSharper.Caches/
+Automato/node_modules
 Assets/
 Automato/appsettings.Development.json
 .DS_Store

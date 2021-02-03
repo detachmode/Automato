@@ -1,0 +1,88 @@
+@page "/"
+
+@using AutomatoCore
+@inject AutoEngine Engine
+@inject MessageService _message
+@implements IDisposable
+
+<div>
+    @if (!isBigScreen)
+    {
+        <Descriptions Title="Details">
+            <DescriptionsItem Title="Language">F#</DescriptionsItem>
+            <DescriptionsItem Title="Execution Time">@Engine.LastLoadingTime</DescriptionsItem>
+
+        </Descriptions>
+    }
+
+    
+    <Button
+        Type="primary"
+        Icon="caret-right"
+        Loading="@Engine.IsLoadingApp"
+        OnClick="@Engine.LoadApp1">
+        Run
+    </Button>
+    <Button OnClick="@ToggleBigScreen" Icon="arrows-alt"  />
+
+    @if (Engine.State.UI != null)
+    {
+        var style = $"width: {width}";
+        <Card Title="App1" Bordered="true" Style="@style">
+            <AntDesign.Body>
+                <AutoUIRenderer/>
+            </AntDesign.Body>
+        </Card>
+    }
+
+    
+</div>
+
+
+@code
+{
+    protected override void OnInitialized()
+    {
+        Engine.OnStateHasChanged += EngineOnOnStateHasChanged;
+        Engine.OnMessagePopup += OnMessageHandler;
+        base.OnInitialized();
+    }
+
+    private async Task EngineOnOnStateHasChanged() => await InvokeAsync(StateHasChanged);
+    private void OnMessageHandler(string info, MessageKind kind)
+    {
+        switch (kind)
+        {
+            case MessageKind.Error:
+                _message.Error(info);
+                break;
+            case MessageKind.Info:
+                _message.Info(info);
+                break;
+            case MessageKind.Success:
+                _message.Success(info, 1);
+                break;
+            case MessageKind.Warning:
+                _message.Warning(info);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(kind), kind, null);
+        }
+        
+    }
+
+    public void Dispose()
+    {
+        Engine.OnStateHasChanged -= EngineOnOnStateHasChanged;
+        Engine.OnMessagePopup -= OnMessageHandler;
+    }
+
+    string width = "500px";
+    bool isBigScreen = false;
+    private void ToggleBigScreen()
+    {
+        width = isBigScreen ? "500px" : "100%";
+        isBigScreen = !isBigScreen;
+        StateHasChanged();
+    }
+}

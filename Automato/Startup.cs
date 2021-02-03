@@ -1,9 +1,17 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Automato.Data;
+using AntDesign.Pro.Layout;
+using AutomatoCore;
 
 namespace Automato
 {
@@ -22,8 +30,13 @@ namespace Automato
         {
             services.AddRazorPages();
             services.AddServerSideBlazor();
-            services.AddScoped<Fsharp>();
-            services.Configure<AutomatoConfig>(Configuration.GetSection("Automato"));
+            services.AddAntDesign();
+            services.AddAutomato(Configuration);
+			services.AddScoped(sp => new HttpClient
+            {
+                BaseAddress = new Uri(sp.GetService<NavigationManager>().BaseUri)
+            });
+            services.Configure<ProSettings>(Configuration.GetSection("ProSettings"));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -42,7 +55,6 @@ namespace Automato
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            
 
             app.UseRouting();
 
