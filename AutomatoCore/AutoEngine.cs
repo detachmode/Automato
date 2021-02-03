@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using Automato;
@@ -36,15 +37,18 @@ namespace AutomatoCore
         public State State { get; set; } = new();
 
         public string Output { get; set; }
-
+        public TimeSpan LastLoadingTime { get; set; }
+        public bool IsLoadingApp { get; set; }
+        
+        public event Action<string,MessageKind> OnMessagePopup;
         public event Func<Task> OnStateHasChanged;
 
 
-        public void ClickButton(Button btn)
+        public async Task ClickButton(Button btn)
         {
             Output = btn.OnClickEval;
             State.Message = btn.OnClickEval;
-            ExecuteAndCatchErrors();
+            await ExecuteAndCatchErrors();
         }
         
         public void UpdateInput(object value, Input sender)
@@ -70,8 +74,7 @@ namespace AutomatoCore
                     StateHasChanged();
 
                     await Task.Delay(10);
-                    ExecuteAndCatchErrors();
-                    Output = "loaded!";
+                    await ExecuteAndCatchErrors();
                     lastEval = lastWrite;
 
                     StateHasChanged();
@@ -82,37 +85,68 @@ namespace AutomatoCore
         }
 
 
-        private void ExecuteAndCatchErrors()
+        private async Task ExecuteAndCatchErrors()
         {
             try
             {
+                var sw = Stopwatch.StartNew();
+                IsLoadingApp = true;
+                StateHasChanged();
+                await Task.Delay(100);
+                StateHasChanged();
+                
                 State = _fsharp.App1(lastExecutionFailed ? new State() : State);
+                
+                
+                LastLoadingTime = sw.Elapsed;
+                IsLoadingApp = false;
+                if(lastExecutionFailed)
+                    OnMessagePopup?.Invoke("App runs :)", MessageKind.Success);
+
+                sw.Stop();
                 lastExecutionFailed = false;
+                
             }
             catch (Exception e)
             {
-                lastExecutionFailed = true;
-                State.UI = new Container
-                {
-                    UiElements = new List<IAutoUi>
-                    {
-                        new Label
-                        {
-                            Text = "<b>Failed to execute App1 script:" +
-                                   "</b><br/>" +
-                                   $"{e.Message}" +
-                                   "<hr><hr>" +
-                                   "<b>CompleteCaught Exception in Blazor</b>" +
-                                   $"{e}"
-                        }
-                    }
-                };
+                HandleError(e);
             }
+            StateHasChanged();
+        }
+
+        private void HandleError(Exception e)
+        {
+            lastExecutionFailed = true;
+            OnMessagePopup?.Invoke("Failed!", MessageKind.Error);
+
+            State.UI = new Container
+            {
+                UiElements = new List<IAutoUi>
+                {
+                    new Label
+                    {
+                        Text = "<b>Failed to execute App1 script:" +
+                               "</b><br/>" +
+                               $"{e.Message}" +
+                               "<hr><hr>" +
+                               "<b>CompleteCaught Exception in Blazor</b>" +
+                               $"{e}"
+                    }
+                }
+            };
         }
 
         private void StateHasChanged()
         {
             OnStateHasChanged?.Invoke();
         }
+    }
+
+    public enum MessageKind
+    {
+        Error,
+        Info,
+        Success,
+        Warning
     }
 }

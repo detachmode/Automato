@@ -1,71 +1,55 @@
 @using AutoUIShared.AutoUI
 @using System.IO
 @using AutomatoCore
+@using Microsoft.AspNetCore.Components.Authorization
 @inject AutoEngine Engine
+@implements IDisposable
 @if (Engine.State.UI != null && Engine.State.UI is Container container)
 {
     foreach (var autoUi in container.UiElements)
     {
         switch (autoUi)
         {
-            case Button btn:
-                <div style="margin-left:0">
-                    <button @onclick="() => Engine.ClickButton(btn)"
-                             style="margin:6px 20px 6px 6px;padding:3px 6px;">
-                        <table>
-                            <tbody>
-                            <tr>
-                                <td style="padding:6px" width="300px">
-                                    <span style="padding: 2px">
-                                        <i class="${iconClass}"></i>
-                                        <!-- <i class="far fa-save"></i> -->
-                                    </span>
-                                
-                                    @((MarkupString)btn.Label)
-
-                                </td>
-                                <td style="padding:0px">@btn.OnClickEval</td>
-                            </tr>
-
-                            </tbody>
-                        </table>
-
-                    </button>
-
+            case AutoUIShared.AutoUI.Button btn:
+                <div>
+                    <Button style="margin: 10px 0" @onclick="() => Engine.ClickButton(btn)">
+                        @((MarkupString) btn.Label)
+                    </Button>
                 </div>
-
                 break;
             case Input input:
-                <div style="
-                        width:200px; 
-                        margin:6px 20px 6px 6px;
-                        padding:3px 6px;">
-                    <span> @((MarkupString)@input.Label)</span>
-                    <input style="    
-                            background-color: #f9f9f9;
-                            border-color: #6b6b6b;
-                            color: #363636;
-                            box-shadow: inset 2px 4px 3px 0px rgba(10,10,10,.1);"
-                           type="text" 
-                           value="@input.Value" 
-                           @oninput="@(e => Engine.UpdateInput(e.Value, input))">
+                <div>
+                    <span> @((MarkupString) @input.Label)</span>
+                    <input
+                        type="text"
+                        value="@input.Value"
+                        @oninput="@(e => Engine.UpdateInput(e.Value, input))">
                 </div>
                 break;
-            case Label label:
+            case AutoUIShared.AutoUI.Label label:
                 <div>
-                    <span style="margin:6px 20px 6px 6px;padding:3px 6px;">
-                       @((MarkupString)label.Text) 
-                    </span>
+                   @((MarkupString) label.Text)
                 </div>
                 break;
         }
     }
 }
+
 @code
 {
     protected override void OnInitialized()
     {
-        Engine.OnStateHasChanged += async () => await InvokeAsync(StateHasChanged);
+        Engine.OnStateHasChanged += StateChangedHandler;
         base.OnInitialized();
+    }
+
+    private async Task StateChangedHandler()
+    {
+        await InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        Engine.OnStateHasChanged -= StateChangedHandler;
     }
 }
